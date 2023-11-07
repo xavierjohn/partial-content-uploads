@@ -9,6 +9,10 @@ jobs:
   build:
     name: "Publish New Draft Version"
     runs-on: ubuntu-latest
+    permissions:
+        contents: write
+        pull-requests: write
+
     steps:
     - name: "Checkout"
       uses: actions/checkout@v3
