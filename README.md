@@ -12,6 +12,23 @@ This is the working area for the IETF [CORE Working Group](https://datatracker.i
 
 Have a general question, suggestion, or other feedback? Check out how you can [contribute](CONTRIBUTING.md).
 
+## Command Line Usage
+
+Formatted text and HTML versions of the draft can be built using `make`.
+
+```sh
+$ make
+```
+
+Command line usage requires that you have the necessary software installed.  See
+[the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
+
+Run **idnits** and fix errors before pushing:
+
+```sh
+$ make idnits
+```
+
 ## License
 
 The content in this project is licensed under the guidelines for [Internet Engineering Task Force (IETF)](https://www.ietf.org/)

@@ -22,3 +22,6 @@ draft-ietf-partial-content-uploads.xml
 package-lock.json
 report.xml
 .DS_Store
+package-lock.json
+report.xml
+!requirements.txt
