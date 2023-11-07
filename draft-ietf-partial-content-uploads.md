@@ -73,6 +73,8 @@ This specification defines conformance criteria for both senders (usually, HTTP 
 
 ## Syntax Notation
 
+{::boilerplate std68}
+
 # New Partial Content Transfer
 
 The POST method MUST be used to indicate that the client intends to start a new partial content transfer. The client MUST send the Content-Disposition header field defined in {{!RFC6266}} to indicate how the origin server should process the content. This will provide enough information for the origin server to allocate the required storage space before any content is transferred. This behavior ensures that the origin server has enough storage space and the client is authorized to upload the content.
