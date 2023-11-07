@@ -38,6 +38,7 @@ normative:
     RFC7231:
     RFC7230:
     RFC6266:
+    RFC5234:
     RFC2183:
 
 informative:
@@ -73,7 +74,7 @@ This specification defines conformance criteria for both senders (usually, HTTP 
 
 ## Syntax Notation
 
-{::boilerplate std68}
+This specification uses the Augmented Backus-Naur Form (ABNF) notation of {{!RFC5234}} with a list extension, defined in Section 7 of {{!RFC7230}}, that allows for compact definition of comma-separated lists using a '#' operator (similar to how the '*' operator indicates repetition).
 
 # New Partial Content Transfer
 
