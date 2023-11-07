@@ -5,7 +5,7 @@ stand_alone: true
 
 title: "Partial Content Uploads in HTTP"
 abbrev: "Partial Content Uploads"
-docname: draft-partial-content-uploads-latest
+docname: draft-ietf-partial-content-uploads-latest
 category: info
 
 submissiontype: IETF
