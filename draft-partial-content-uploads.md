@@ -9,20 +9,20 @@ number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+# area: AREA
+# workgroup: WG Working Group
 keyword:
  - partial
  - upload
  - range
  - http
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+#  group: WG
+#  type: Working Group
+#  mail: WG@example.com
+#  arch: https://example.com/WG
+  github: "commonsensesoftware/partial-content-uploads"
+  latest: "https://commonsensesoftware.github.io/partial-content-uploads/draft-partial-content-uploads.html"
 
 author:
  -
