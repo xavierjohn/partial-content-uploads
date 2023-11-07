@@ -32,12 +32,13 @@ author:
 normative:
     RFC8594:
     RFC7807:
-    RFC7232:
+    RFC7631:
+    RFC7233:
     RFC7232:
     RFC7231:
     RFC7230:
     RFC6266:
-    RFC6266:
+    RFC2183:
 
 informative:
     XHR:
@@ -78,9 +79,9 @@ This specification defines conformance criteria for both senders (usually, HTTP 
 
 The POST method MUST be used to indicate that the client intends to start a new partial content transfer. The client MUST send the Content-Disposition header field defined in {{!RFC6266}} to indicate how the origin server should process the content. This will provide enough information for the origin server to allocate the required storage space before any content is transferred. This behavior ensures that the origin server has enough storage space and the client is authorized to upload the content.
 
-If the origin server successfully allocates the required storage, it MUST respond with 201 (Created), including a Location and ETag header field. If an origin server refuses to allocate the requested storage (ex: due to policy limit), it MUST respond with 400 (Bad Request). It is RECOMMENDED that such a response include problem details as defined in {{!RFC 7807}}, which explains why the content cannot be allocated. When an origin server fails to allocate storage for the resource, then it MUST respond with 507 (Insufficient Storage). If the client is not authorized to create the requested resource, the origin server MUST respond with 401 (Unauthorized) if authentication is possible; otherwise, it MUST respond with 403 (Forbidden).
+If the origin server successfully allocates the required storage, it MUST respond with 201 (Created), including a Location and ETag header field. If an origin server refuses to allocate the requested storage (ex: due to policy limit), it MUST respond with 400 (Bad Request). It is RECOMMENDED that such a response include problem details as defined in {{!RFC7807}}, which explains why the content cannot be allocated. When an origin server fails to allocate storage for the resource, then it MUST respond with 507 (Insufficient Storage). If the client is not authorized to create the requested resource, the origin server MUST respond with 401 (Unauthorized) if authentication is possible; otherwise, it MUST respond with 403 (Forbidden).
 
-There is no temporal specification as to how long a client can take to transfer all the content ranges. A server MAY choose to implicitly cancel a transfer it deems abandoned due to inactivity after an arbitrary period or after an absolute amount of time has passed. It is RECOMMENDED that an origin server which knows when the transfer will be considered canceled return the Sunset header as defined in {{!RFC 8594}}, which indicates the cancellation date and time. {{cancel-transfer}} describes how a transfer is explicitly canceled.
+There is no temporal specification as to how long a client can take to transfer all the content ranges. A server MAY choose to implicitly cancel a transfer it deems abandoned due to inactivity after an arbitrary period or after an absolute amount of time has passed. It is RECOMMENDED that an origin server which knows when the transfer will be considered canceled return the Sunset header as defined in {{!RFC8594}}, which indicates the cancellation date and time. {{cancel-transfer}} describes how a transfer is explicitly canceled.
 
 ## The Content-Disposition Header Field
 {::boilerplate bcp14-tagged}
@@ -246,6 +247,6 @@ TODO IANA
 
 The Content-Length header field defined in Section 3.3.2 of {{!RFC7630}} is the most appropriate header field to indicate the size of the intended content being transferred. As Section 3 of {{!RFC7631}} indicates, a 'representation' can be anything. In this document, the 'representation' would be the allocated storage for the content transfer, such as a file.
 
-The client scripting engines of modern browsers use the XMLHttpRequest (XHR) API. Section 4.5.2 of the {{?XHR}} specification clearly indicates that the Content-Length header is restricted and may only be set by the browser. The inability to set the Content-Length header without a body makes it an unusable header field as it relates to this document.
+The client scripting engines of modern browsers use the XMLHttpRequest (XHR) API. Section 4.5.2 of the {{XHR}} specification clearly indicates that the Content-Length header is restricted and may only be set by the browser. The inability to set the Content-Length header without a body makes it an unusable header field as it relates to this document.
 
 In lieu of defining a new header field, this document elected to use the existing Content-Disposition header field defined in {{!RFC2183}} and {{!RFC6266}} to serve the same purpose.
