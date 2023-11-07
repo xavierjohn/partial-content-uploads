@@ -1,0 +1,17 @@
+# REF: http://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+
+[*.{md,xml}]
+charset = utf-8
+insert_final_newline = false
+trim_trailing_whitespace = true
+
+[*.md]
+indent_size = 4
+
+[*.xml]
+indent_size = 1
