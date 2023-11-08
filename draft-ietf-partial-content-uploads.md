@@ -7,7 +7,7 @@ title: "Partial Content Uploads in HTTP"
 abbrev: "Partial Content Uploads"
 docname: draft-ietf-partial-content-uploads-latest
 category: info
-
+ipr: trust200902
 submissiontype: IETF
 number:
 date:
