@@ -88,9 +88,12 @@ There is no temporal specification as to how long a client can take to transfer 
 
 Content-Disposition is a REQUIRED header field. In its absence, the origin server MUST respond with 400 (Bad Request). This header field indicates that the origin server should create a new storage resource and of what size.
 
-### The Create Disposition Type
+### The Create Disposition Type {#create-disposition-type}
 
-The disposition type 'create' is REQUIRED and is meant to instruct the origin server that it should pre-allocate the required storage space, but the request itself does not contain a body that is to be written to storage.
+The disposition type "create" is REQUIRED and is meant to instruct the origin server that it should pre-allocate the required storage space, but the request itself does not contain a body that is to be written to storage.
+
+If a client were to send one of the existing disposition types "inline" or "attachment" to an origin server without a body, it is not clear what action the server should take. The disposition type "create" expresses a
+client's expectation that the disposition of the origin server is to create a resource of "size" octets.
 
 ### Disposition Parameter: 'Size'
 
@@ -220,7 +223,11 @@ TODO Security
 
 # IANA Considerations
 
-TODO IANA
+This document registers a new "disposition-type" value for the Content-Disposition header: create. IANA is asked to add a new "disposition-type" value to the Content-Disposition header as defined by {{!RFC2183}}:
+
+create: allocate a resource of "size" octets without a body
+
+The "size" parameter is REQUIRED. The "filename", "creation-date", "modification-date", and "read-date" are OPTIONAL. Any other parameters are unused and SHOULD be ignored.
 
 --- back
 
