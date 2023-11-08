@@ -76,11 +76,11 @@ This specification defines conformance criteria for both senders (usually, HTTP 
 
 This specification uses the Augmented Backus-Naur Form (ABNF) notation of {{!RFC5234}} with a list extension, defined in Section 7 of {{!RFC7230}}, that allows for compact definition of comma-separated lists using a '#' operator (similar to how the '*' operator indicates repetition).
 
-# New Partial Content Transfer
+# New Partial Content Transfer {#new-transfer}
 
 The POST method MUST be used to indicate that the client intends to start a new partial content transfer. The client MUST send the Content-Disposition header field defined in {{!RFC6266}} to indicate how the origin server should process the content. This will provide enough information for the origin server to allocate the required storage space before any content is transferred. This behavior ensures that the origin server has enough storage space and the client is authorized to upload the content.
 
-If the origin server successfully allocates the required storage, it MUST respond with 201 (Created), including a Location and ETag header field. If an origin server refuses to allocate the requested storage (ex: due to policy limit), it MUST respond with 400 (Bad Request). It is RECOMMENDED that such a response include problem details as defined in {{!RFC7807}}, which explains why the content cannot be allocated. When an origin server fails to allocate storage for the resource, then it MUST respond with 507 (Insufficient Storage). If the client is not authorized to create the requested resource, the origin server MUST respond with 401 (Unauthorized) if authentication is possible; otherwise, it MUST respond with 403 (Forbidden).
+If the origin server successfully allocates the required storage, it MUST respond with 201 (Created), including a Location and ETag header field. If an origin server refuses to allocate the requested storage (ex: due to policy limit), it MUST respond with 400 (Bad Request). It is RECOMMENDED that such a response include problem details as defined in {{!RFC7807}} which explains why the content cannot be allocated. When an origin server fails to allocate storage for the resource, then it MUST respond with 507 (Insufficient Storage). If the client is not authorized to create the requested resource, the origin server MUST respond with 401 (Unauthorized) if authentication is possible; otherwise, it MUST respond with 403 (Forbidden).
 
 There is no temporal specification as to how long a client can take to transfer all the content ranges. A server MAY choose to implicitly cancel a transfer it deems abandoned due to inactivity after an arbitrary period or after an absolute amount of time has passed. It is RECOMMENDED that an origin server which knows when the transfer will be considered canceled return the Sunset header as defined in {{!RFC8594}}, which indicates the cancellation date and time. {{cancel-transfer}} describes how a transfer is explicitly canceled.
 
@@ -99,7 +99,25 @@ client's expectation that the disposition of the origin server is to create a re
 
 The size parameter is REQUIRED and has the same meaning as defined in Section 2.7 of {{!RFC2183}}. The origin server MUST use this value as the amount of storage to allocate in octets.
 
-If a client does not provide the size parameter or the size is equal to or less than zero, the origin server MUST respond with 411 (Length Required).
+If a client does not provide the size parameter or the size is equal to or less than zero, the origin server MUST respond with 411 (Length Required). If the origin server refuses to allocate the requested storage, it MUST
+respond with 400 (Bad Request). It is RECOMMENDED that such a response include problem details as defined in {{!RFC7807}} which explains why the content cannot be allocated and includes the maximum allowable size. For example,
+if the requested size is too large, the server could respond with:
+
+~~~~ http
+HTTP/1.1 400 Bad Request
+Content-Type: application/problem+json
+Content-Language: en
+
+{
+  "type": "<rfc url>#<rfc section>",
+  "title": "The requested resource size is too large."
+  "detail": "The requested size was 1TB, but the maximum, allowed size is 200GB.",
+  "allowed": {
+    "size": 200,
+    "unit": "GB"
+  }
+}
+~~~~
 
 ### Disposition Parameter: 'Filename'
 
@@ -139,7 +157,7 @@ ETag: "sz8L2qGcV0SHqg8rXwALVQ=="
 Sunset: Mon, 13 Nov 2023 00:00:00 GMT
 ~~~~
 
-# Update Partial Content Transfer
+# Update Partial Content Transfer {#update-transfer}
 
 The PATCH method MUST be used to update partial content. Unlike other uses of PATCH, an origin server MUST complete this operation idempotently. Given the entity tag provided by the client and the fact that the required storage space has already been allocated, the origin server has enough information to safely fulfill the request idempotently. This behavior is true even if multiple client requests occur concurrently or overlap in content range.
 
@@ -163,7 +181,7 @@ If-Match is a REQUIRED header field. The If-Match header field MUST contain the 
 
 ## Expect Header Field
 
-Expect is an OPTIONAL header field and has the same meaning as defined in Section 5.1.1 of {{!RFC7231}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Entity Too Large).
+Expect is an OPTIONAL header field and has the same meaning as defined in Section 5.1.1 of {{!RFC7231}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large).
 
 ## Resource Contention
 
@@ -219,11 +237,17 @@ If-Match: "sz8L2qGcV0SHqg8rXwALVQ=="
 
 # Security Considerations
 
-TODO Security
+This document has the same security considerations that are outlined in Section 5 of {{!RFC2183}}. There are additional risks from clients requesting unintentionally large resources. {{new-transfer}} and {{update-transfer}} describe the
+validation process and how to reject such a request. The maximum sizes allowed, in whole or in part, are at the discretion of the origin server.
+
+While this document mandates that entity tags be used in requests, it does not dictate the format or content of those values. An origin server SHOULD generate an entity tag that cannot be easily replayed. A few possible techniques might
+include rotating the entity tag during each request as well as encrypting or signing a value in the entity tag using a client certificate. These protective measures would be in addition to transport-level security, client authentication,
+and client authorization.
 
 # IANA Considerations
 
-This document registers a new "disposition-type" value for the Content-Disposition header: create. IANA is asked to add a new "disposition-type" value to the Content-Disposition header as defined by {{!RFC2183}}:
+This document registers a new "disposition-type" value for the Content-Disposition header: create. The definition and usage of this value is described in {{create-disposition-type}}. IANA is asked to add a new "disposition-type" value to
+the Content-Disposition header as defined by {{!RFC2183}}:
 
 create: allocate a resource of "size" octets without a body
 
