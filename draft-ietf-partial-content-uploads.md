@@ -101,7 +101,6 @@ respond with 400 (Bad Request). It is RECOMMENDED that such a response include p
 if the requested size is too large, the server MAY respond with:
 
 ~~~~ http
-HTTP/1.1 400 Bad Request
 Content-Type: application/problem+json
 Content-Language: en
 
