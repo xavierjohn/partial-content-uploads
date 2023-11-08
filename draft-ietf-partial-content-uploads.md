@@ -87,7 +87,7 @@ Content-Disposition is a REQUIRED header field. In its absence, the origin serve
 
 ### The Create Disposition Type {#create-disposition-type}
 
-The disposition type "create" is REQUIRED and is meant to instruct the origin server that it should pre-allocate the required storage space, but the request itself does not contain a body that is to be written to storage.
+The disposition type "create" is REQUIRED and is meant to instruct the origin server that it should preallocate the required storage space, but the request itself does not contain a body that is to be written to storage.
 
 If a client were to send one of the existing disposition types "inline" or "attachment" to an origin server without a body, it is not clear what action the server should take. The disposition type "create" expresses a
 client's expectation that the disposition of the origin server is to create a resource of "size" octets.
@@ -109,10 +109,7 @@ Content-Language: en
   "type": "<rfc url>#<rfc section>",
   "title": "The requested resource size is too large."
   "detail": "1TB exceeds the 200GB maximum, allowed size.",
-  "allowed": {
-    "size": 200,
-    "unit": "GB"
-  }
+  "max-size": 2e+11
 }
 ~~~~
 
@@ -158,7 +155,7 @@ Sunset: Mon, 13 Nov 2023 00:00:00 GMT
 
 The PATCH method MUST be used to update partial content. Unlike other uses of PATCH, an origin server MUST complete this operation idempotently. Given the entity tag provided by the client and the fact that the required storage space has already been allocated, the origin server has enough information to safely fulfill the request idempotently. This behavior is true even if multiple client requests occur concurrently or overlap in content range.
 
-If the origin server successfully updates the specified content range and more content is expected, then it MUST respond with 204 (No Content). If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client can retrieve the resource with a GET request, which MAY not previously be known to the client. If the Content-Disposition header field contained the modification-date parameter, then the origin server MUST also return this value in the response Last-Modified header field.
+If the origin server successfully updates the specified content range and more content is expected, then it MUST respond with 202 (Accepted). If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client can retrieve the resource with a GET request, which MAY not previously be known to the client. If the Content-Disposition header field contained the modification-date parameter, then the origin server MUST also return this value in the response Last-Modified header field.
 
 ## Content-Range Header Field
 
