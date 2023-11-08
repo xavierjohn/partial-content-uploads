@@ -30,13 +30,10 @@ author:
     email: chris.s.martinez@outlook.com
 
 normative:
+    RFC9110:
     RFC8594:
     RFC7807:
     RFC7631:
-    RFC7233:
-    RFC7232:
-    RFC7231:
-    RFC7230:
     RFC6266:
     RFC5234:
     RFC2183:
@@ -60,9 +57,9 @@ The Hypertext Transfer Protocol (HTTP) is a stateless application-level protocol
 
 # Introduction {#introduction}
 
-Hypertext Transfer Protocol (HTTP) clients often encounter interrupted data transfers because of canceled requests or dropped connections. RFC 7233 defines HTTP range requests and partial responses, but it only describes how a client can transfer data from a server (e.g. download).
+Hypertext Transfer Protocol (HTTP) clients often encounter interrupted data transfers because of canceled requests or dropped connections. RFC 9110 defines HTTP range requests and partial responses, but it only describes how a client can transfer data from a server (e.g. download).
 
-This document defines a reciprocal set of HTTP range requests and responses that a client can use to transfer data to a server (e.g. upload). Where appropriate, this document will use existing range units and header fields defined in {{!RFC7233}}, {{!RFC6266}}, and {{!RFC2183}}.
+This document defines a reciprocal set of HTTP range requests and responses that a client can use to transfer data to a server (e.g. upload). Where appropriate, this document will use existing range units and header fields defined in {{!RFC9110}}, {{!RFC6266}}, and {{!RFC2183}}.
 
 Although the range request mechanism is designed to allow for extensible range types, this specification only defines requests for byte ranges.
 
@@ -74,7 +71,7 @@ This specification defines conformance criteria for both senders (usually, HTTP 
 
 ## Syntax Notation
 
-This specification uses the Augmented Backus-Naur Form (ABNF) notation of {{!RFC5234}} with a list extension, defined in Section 7 of {{!RFC7230}}, that allows for compact definition of comma-separated lists using a '#' operator (similar to how the '*' operator indicates repetition).
+This specification uses the Augmented Backus-Naur Form (ABNF) notation of {{!RFC5234}} with a list extension, defined in Section 2.1 of {{!RFC9110}}, that allows for compact definition of comma-separated lists using a '#' operator (similar to how the '*' operator indicates repetition).
 
 # New Partial Content Transfer {#new-transfer}
 
@@ -101,7 +98,7 @@ The size parameter is REQUIRED and has the same meaning as defined in Section 2.
 
 If a client does not provide the size parameter or the size is equal to or less than zero, the origin server MUST respond with 411 (Length Required). If the origin server refuses to allocate the requested storage, it MUST
 respond with 400 (Bad Request). It is RECOMMENDED that such a response include problem details as defined in {{!RFC7807}} which explains why the content cannot be allocated and includes the maximum allowable size. For example,
-if the requested size is too large, the server could respond with:
+if the requested size is too large, the server MAY respond with:
 
 ~~~~ http
 HTTP/1.1 400 Bad Request
@@ -121,7 +118,7 @@ Content-Language: en
 
 ### Disposition Parameter: 'Filename'
 
-The "filename" and "filename*" parameters are OPTIONAL parameters that have the same meaning defined in Section 4.3 of {{!RFC6266}}. When specified by a client, the origin server MAY use the specified file name in lieu of the resource identifier derived from the request URL.
+The "filename" and "filename*" parameters are OPTIONAL parameters that have the same meaning defined in Section 4.3 of {{!RFC6266}}. When specified by a client, the origin server MAY use the specified file name in lieu of the resource identifier that it elects to generate, which MAY also derive from the request URL.
 
 ### Disposition Parameter: 'Modification-Date'
 
@@ -129,7 +126,7 @@ The modification-date parameter is OPTIONAL and has the same meaning as defined 
 
 ## Resource Contention
 
-It is possible that multiple clients MAY request an origin server provision storage for the same resource. An origin server SHOULD use optimistic behavior such that the last successful client request is the owner of the remaining transfer requests. The entity tag returned by the origin server in the response provides the correlation to all other requests for a given client. If the server is unable to fulfill the request because the resource cannot be provisioned, it MUST respond with 409 (Conflict) to which a client MAY retry the request. A server MAY also return the Retry-After header field as defined in Section 7.1.3 of {{!RFC7231}} to provide a hint to the client as to how long it should wait before retrying the request.
+It is possible that multiple clients MAY request an origin server provision storage for the same resource. An origin server SHOULD use optimistic behavior such that the last successful client request is the owner of the remaining transfer requests. The entity tag returned by the origin server in the response provides the correlation to all other requests for a given client. If the server is unable to fulfill the request because the resource cannot be provisioned, it MUST respond with 409 (Conflict) to which a client MAY retry the request. A server MAY also return the Retry-After header field as defined in Section 10.2.3 of {{!RFC9110}} to provide a hint to the client as to how long it should wait before retrying the request.
 
 It is NOT RECOMMENDED that origin servers employ a stateful locking strategy as it could result in a condition by which no client is able to create the requested resource. This document does not describe how to lock or unlock such a resource.
 
@@ -161,17 +158,17 @@ Sunset: Mon, 13 Nov 2023 00:00:00 GMT
 
 The PATCH method MUST be used to update partial content. Unlike other uses of PATCH, an origin server MUST complete this operation idempotently. Given the entity tag provided by the client and the fact that the required storage space has already been allocated, the origin server has enough information to safely fulfill the request idempotently. This behavior is true even if multiple client requests occur concurrently or overlap in content range.
 
-If the origin server successfully updates the specified content range, then it MUST respond with 204 (No Content). If the Content-Disposition header field contained the modification-date parameter, then the origin server MUST also return this value in the response Last-Modified header field.
+If the origin server successfully updates the specified content range and more content is expected, then it MUST respond with 204 (No Content). If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client can retrieve the resource with a GET request, which MAY not previously be known to the client. If the Content-Disposition header field contained the modification-date parameter, then the origin server MUST also return this value in the response Last-Modified header field.
 
 ## Content-Range Header Field
 
-Content-Range is a REQUIRED header field that has the same meaning as defined in Section 4.2 of {{!RFC7233}}. The Content-Range header field informs the origin server what part of the content is being transferred.
+Content-Range is a REQUIRED header field that has the same meaning as defined in Section 14.4 of {{!RFC9110}}. The Content-Range header field informs the origin server what part of the content is being transferred.
 
 If the byte-range in Content-Range is invalid or the complete-length does not match the provisioned storage amount defined by the size parameter in the Content-Disposition header field when the partial content transfer was started, the server MUST respond with 416 (Range Not Satisfiable). A client SHOULD inspect the complete-length of the Content-Range header field in the error response to determine whether the source content has been modified.
 
 ## Last-Modified Header Field
 
-Last-Modified is an OPTIONAL header field and has the same meaning as defined in Section 2.2 of {{!RFC7232}}. If the modification-date parameter was specified in the Content-Disposition header field as part of the start of the partial content transfer, then the origin server MUST respond with the Last-Modified header field containing the same value.
+Last-Modified is an OPTIONAL header field and has the same meaning as defined in Section 8.8.2 of {{!RFC9110}}. If the modification-date parameter was specified in the Content-Disposition header field as part of the start of the partial content transfer, then the origin server MUST respond with the Last-Modified header field containing the same value.
 
 A client MAY use the Last-Modified header field to determine whether its copy of the content being transferred is still the same as the copy the origin server has.
 
@@ -181,11 +178,11 @@ If-Match is a REQUIRED header field. The If-Match header field MUST contain the 
 
 ## Expect Header Field
 
-Expect is an OPTIONAL header field and has the same meaning as defined in Section 5.1.1 of {{!RFC7231}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large).
+Expect is an OPTIONAL header field and has the same meaning as defined in Section 10.1.1 of {{!RFC9110}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large).
 
 ## Resource Contention
 
-It is possible that multiple clients MAY request that an origin server update a partial content transfer for the same resource. Provided that the If-Match header field contains a valid entity tag ({{if-match-header}}), an origin server SHOULD use an optimistic behavior when copying the transferred content to storage. If the server is unable to fulfill the request because the resource is inaccessible, it MUST respond with 409 (Conflict). Since the request MUST be idempotent, a client MAY retry a 409 error response. A server MAY also return the Retry-After header field as defined in Section 7.1.3 of {{!RFC7231}} to provide a hint to the client as to how long it should wait before retrying the request.
+It is possible that multiple clients MAY request that an origin server update a partial content transfer for the same resource. Provided that the If-Match header field contains a valid entity tag ({{if-match-header}}), an origin server SHOULD use an optimistic behavior when copying the transferred content to storage. If the server is unable to fulfill the request because the resource is inaccessible, it MUST respond with 409 (Conflict). Since the request MUST be idempotent, a client MAY retry a 409 error response. A server MAY also return the Retry-After header field as defined in Section 10.2.3 of {{!RFC9110}} to provide a hint to the client as to how long it should wait before retrying the request.
 
 If the server is unable to fulfill the request because the allocated storage for the resource no longer exists, the server MUST respond with 410 (Gone).
 
@@ -195,7 +192,7 @@ Retrying large content transfers can strain network resources and are likely to 
 
 To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it may increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain contiguous content ranges up to the size of the total content, potentially overlapping.
 
-A server SHOULD NOT be stateful. A server, however, MAY choose to store the start and end position of each content range received in external storage such as a file or database. The exact mechanism used to implement this behavior is at the discretion of the server. Once the server has made the decision that all the content has been transferred, it MAY allow access to the resource via the GET method.
+A server SHOULD NOT be stateful. A server, however, MAY choose to store the start and end position of each content range received in external storage such as a file or database. The exact mechanism used to implement this behavior is at the discretion of the server. Once the server has made the decision that all of the content has been transferred, it MAY allow access to the resource via the GET method that is indicated in Content-Location.
 
 ## Example
 
@@ -215,7 +212,7 @@ Expect: 100-continue
 
 The DELETE method MUST be used to cancel a partial content transfer. When a client requests that a partial content transfer be canceled, the server MUST deallocate the storage previously provisioned for the transfer.
 
-Only the client originator can cancel the content transfer. The same client or a new client MAY begin a new partial content transfer before the existing transfer is complete. Starting a new partial content transfer intrinsically cancels any existing transfer.
+Only the client originator MAY cancel the content transfer. The same client or a new client MAY begin a new partial content transfer before the existing transfer is complete. Starting a new partial content transfer intrinsically cancels any existing transfer.
 
 ## If-Match Header Field
 
@@ -223,7 +220,7 @@ If-Match is a REQUIRED header field. The If-Match header field MUST contain the 
 
 ## Resource Contention
 
-It is possible that multiple clients MAY request that an origin server cancel a partial content transfer for the same resource. If the server is unable to fulfill the request because the resource is inaccessible, it MUST respond with 409 (Conflict). Since the request MUST be idempotent, a client MAY retry a 409 error response. A server MAY also return the Retry-After header field as defined in Section 7.1.3 of {{!RFC7231}} to provide a hint to the client as to how long it should wait before retrying the request.
+It is possible that multiple clients MAY request that an origin server cancel a partial content transfer for the same resource. If the server is unable to fulfill the request because the resource is inaccessible, it MUST respond with 409 (Conflict). Since the request MUST be idempotent, a client MAY retry a 409 error response. A server MAY also return the Retry-After header field as defined in Section 10.2.3 of {{!RFC9110}} to provide a hint to the client as to how long it should wait before retrying the request.
 
 If the server is unable to fulfill the request because the allocated storage for the resource no longer exists, the server MUST respond with 204 (No Content) because the transfer has already been canceled.
 
@@ -237,8 +234,8 @@ If-Match: "sz8L2qGcV0SHqg8rXwALVQ=="
 
 # Security Considerations
 
-This document has the same security considerations that are outlined in Section 5 of {{!RFC2183}}. There are additional risks from clients requesting unintentionally large resources. {{new-transfer}} and {{update-transfer}} describe the
-validation process and how to reject such a request. The maximum sizes allowed, in whole or in part, are at the discretion of the origin server.
+This document has the same security considerations that are outlined in Section 5 of {{!RFC2183}} and Section 7 of {{!RFC6266}}. There are additional risks from clients requesting unintentionally large resources. {{new-transfer}} and {{update-transfer}}
+describe the validation process and how to reject such a request. The maximum sizes allowed, in whole or in part, are at the discretion of the origin server.
 
 While this document mandates that entity tags be used in requests, it does not dictate the format or content of those values. An origin server SHOULD generate an entity tag that cannot be easily replayed. A few possible techniques might
 include rotating the entity tag during each request as well as encrypting or signing a value in the entity tag using a client certificate. These protective measures would be in addition to transport-level security, client authentication,
@@ -258,7 +255,7 @@ The "size" parameter is REQUIRED. The "filename", "creation-date", "modification
 # Appendix A. Content-Disposition Versus Content-Length
 {:numbered="false"}
 
-The Content-Length header field defined in Section 3.3.2 of {{!RFC7630}} is the most appropriate header field to indicate the size of the intended content being transferred. As Section 3 of {{!RFC7631}} indicates, a 'representation' can be anything. In this document, the 'representation' would be the allocated storage for the content transfer, such as a file.
+The Content-Length header field defined in Section 3.3.2 of {{!RFC7630}} is the most appropriate header field to indicate the size of the intended content being transferred. As Section 3 of {{!RFC7631}} indicates, a 'representation' can be anything. In this document, the "representation" would be the allocated storage for the content transfer, such as a file.
 
 The client scripting engines of modern browsers use the XMLHttpRequest (XHR) API. Section 4.5.2 of the {{XHR}} specification clearly indicates that the Content-Length header is restricted and may only be set by the browser. The inability to set the Content-Length header without a body makes it an unusable header field as it relates to this document.
 
