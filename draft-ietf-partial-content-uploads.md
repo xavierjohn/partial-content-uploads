@@ -111,7 +111,7 @@ Content-Language: en
 {
   "type": "<rfc url>#<rfc section>",
   "title": "The requested resource size is too large."
-  "detail": "The requested size was 1TB, but the maximum, allowed size is 200GB.",
+  "detail": "1TB exceeds the 200GB maximum, allowed size.",
   "allowed": {
     "size": 200,
     "unit": "GB"
