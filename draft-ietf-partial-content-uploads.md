@@ -105,7 +105,7 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "<rfc url>#<rfc section>",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
   "title": "The requested resource size is too large."
   "detail": "1TB exceeds the 200GB maximum, allowed size.",
   "max-size": 2e+11
