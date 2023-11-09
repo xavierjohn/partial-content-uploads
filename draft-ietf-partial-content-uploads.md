@@ -56,7 +56,7 @@ The Hypertext Transfer Protocol (HTTP) is a stateless application-level protocol
 
 # Introduction {#introduction}
 
-Hypertext Transfer Protocol (HTTP) clients often encounter interrupted data transfers because of canceled requests or dropped connections. RFC 9110 defines HTTP range requests and partial responses, but it only describes how a client can transfer data from a server (e.g. download).
+Hypertext Transfer Protocol (HTTP) clients often encounter interrupted data transfers because of canceled requests or dropped connections. Section 14 of {{!RFC9110}} defines HTTP range requests and partial responses, but it only describes how a client can transfer data from a server (e.g. download).
 
 This document defines a reciprocal set of HTTP range requests and responses that a client can use to transfer data to a server (e.g. upload). Where appropriate, this document will use existing range units and header fields defined in {{!RFC9110}}, {{!RFC6266}}, and {{!RFC2183}}.
 
