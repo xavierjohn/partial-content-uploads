@@ -33,7 +33,6 @@ normative:
     RFC9110:
     RFC8594:
     RFC7807:
-    RFC7631:
     RFC6266:
     RFC5234:
     RFC2183:
@@ -251,7 +250,7 @@ The "size" parameter is REQUIRED. The "filename", "creation-date", "modification
 # Appendix A. Content-Disposition Versus Content-Length
 {:numbered="false"}
 
-The Content-Length header field defined in Section 3.3.2 of {{!RFC7630}} is the most appropriate header field to indicate the size of the intended content being transferred. As Section 3 of {{!RFC7631}} indicates, a 'representation' can be anything. In this document, the "representation" would be the allocated storage for the content transfer, such as a file.
+The Content-Length header field defined in Section 8.6 of {{!RFC9110}} is the most appropriate header field to indicate the size of the intended content being transferred. As Section 8 of {{!RFC9110}} indicates, a "representation" can be anything. In this document, the "representation" would be the allocated storage for the content transfer, such as a file.
 
 The client scripting engines of modern browsers use the XMLHttpRequest (XHR) API. Section 4.5.2 of the {{XHR}} specification clearly indicates that the Content-Length header is restricted and may only be set by the browser. The inability to set the Content-Length header without a body makes it an unusable header field as it relates to this document.
 
