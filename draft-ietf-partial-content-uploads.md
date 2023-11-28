@@ -120,7 +120,7 @@ The "filename" and "filename*" parameters are OPTIONAL parameters that have the 
 
 The modification-date parameter is OPTIONAL and has the same meaning as defined in Section 2.5 of {{!RFC2183}}. When the client does not specify the modification-date parameter, the current date and time on the origin server MAY be used if the server has a clock.
 
-## The Allow-Length Header Field
+## The Allow-Length Header Field {#allow-length}
 
 The Allow-Length response header field allows a server to communicate the allowable length of content. It provides information to clients that enables them to control delimiting framing as they send partial content to the server. It is RECOMMENDED that an origin server return the Allow-Length header when a resource is provisioned for a transfer.
 
