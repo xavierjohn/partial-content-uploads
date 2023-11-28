@@ -122,7 +122,7 @@ The modification-date parameter is OPTIONAL and has the same meaning as defined 
 
 ## The Allow-Length Header Field {#allow-length}
 
-The Allow-Length response header field allows a server to communicate the allowable length of content. It provides information to clients that enables them to control delimiting framing as they send partial content to the server. It is RECOMMENDED that an origin server return the Allow-Length header when a resource is provisioned for a transfer.
+The Allow-Length response header field allows a server to communicate the allowable length of content. It provides information to clients that enables them to delimit framing as they send partial content to the server. It is RECOMMENDED that an origin server return the Allow-Length header field when a resource is provisioned for a transfer.
 
 ~~~~
 Content-Length = 1*DIGIT
@@ -136,7 +136,7 @@ Allow-Length: 10000000
 
 In the absence of the Allow-Length header field, a client is required to know the maximum length through out-of-band knowledge such as publicly documented policy or through probing requests until a suitable length is determined.
 
-An origin server MAY choose to return Allow-Length in a HEAD or OPTIONS request for a client that did not persist the value and resumes a transfer at a later time. The specified Allow-Length SHOULD NOT change for the lifetime of the transfer. If the value does change during a transfer, then the origin server SHOULD support the HEAD method, OPTIONS method, or both, which will respond with an updated Allow-Length header field.
+An origin server MAY choose to return Allow-Length in a HEAD or OPTIONS request for a client that did not persist the value and resumes a transfer at a later time. The specified Allow-Length SHOULD NOT change for the lifetime of a transfer. If the value does change during a transfer, then the origin server SHOULD support the HEAD method, OPTIONS method, or both, that SHALL respond with an updated Allow-Length header field.
 
 ## Resource Contention
 
@@ -192,7 +192,7 @@ If-Match is a REQUIRED header field. The If-Match header field MUST contain the 
 
 ## Expect Header Field
 
-Expect is an OPTIONAL header field and has the same meaning as defined in Section 10.1.1 of {{!RFC9110}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large). The server SHOULD also respond with the Allow-Length header ({{allow-length}}) to indicate the maximum length allowed by the server.
+Expect is an OPTIONAL header field and has the same meaning as defined in Section 10.1.1 of {{!RFC9110}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large). The server SHOULD also respond with the Allow-Length header field ({{allow-length}}) to indicate the maximum length allowed by the server.
 
 ## Resource Contention
 
