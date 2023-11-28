@@ -172,7 +172,7 @@ Sunset: Mon, 13 Nov 2023 00:00:00 GMT
 
 The PATCH method MUST be used to update partial content. Unlike other uses of PATCH, an origin server MUST complete this operation idempotently. Given the entity tag provided by the client and the fact that the required storage space has already been allocated, the origin server has enough information to safely fulfill the request idempotently. This behavior is true even if multiple client requests occur concurrently or overlap in content range.
 
-If the origin server successfully updates the specified content range and more content is expected, then it MUST respond with 202 (Accepted). If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client can retrieve the resource with a GET request, which MAY not previously be known to the client. If the Content-Disposition header field contained the modification-date parameter, then the origin server MUST also return this value in the response Last-Modified header field.
+If the origin server successfully updates the specified content range and more content is expected, then it MUST respond with 202 (Accepted); otherwise, the server MUST complete the transfer as described in {{complete-transfer}}. If the Content-Disposition header field contained the modification-date parameter, then the origin server MUST also return this value in the response Last-Modified header field.
 
 ## Content-Range Header Field
 
@@ -202,9 +202,9 @@ If the server is unable to fulfill the request because the allocated storage for
 
 Retrying large content transfers can strain network resources and are likely to have high latency. If the origin server is aware that the storage resource is temporarily unavailable, it is RECOMMENDED that it automatically retry copying the transferred content. The number of times the server retries, or whether that server retries at all, is at the discretion of the server.
 
-## Completing the Transfer
+## Completing the Transfer {#complete-transfer}
 
-To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it may increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain contiguous content ranges up to the size of the total content, potentially overlapping.
+To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it may increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain contiguous content ranges up to the size of the total content, potentially overlapping. If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client can retrieve the resource with a GET request, which MAY not previously be known to the client.
 
 A server SHOULD NOT be stateful. A server, however, MAY choose to store the start and end position of each content range received in external storage such as a file or database. The exact mechanism used to implement this behavior is at the discretion of the server. Once the server has made the decision that all of the content has been transferred, it MAY allow access to the resource via the GET method that is indicated in Content-Location.
 
