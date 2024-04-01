@@ -79,7 +79,7 @@ The POST method MUST be used to indicate that the client intends to start a new 
 
 If the origin server successfully allocates the necessary storage, it MUST respond with 201 (Created), including a Location and ETag header field. A server MAY elect to return the Allow-Length header field, which indicates the maximum allowed length of any subsequent partial content. If an origin server refuses to allocate the requested storage (ex: due to policy limit), it MUST respond with 422 (Unprocessable Content). It is RECOMMENDED that such a response include problem details as defined in {{!RFC7807}} which explains why the content cannot be allocated. When an origin server fails to allocate storage for the resource, then it MUST respond with 507 (Insufficient Storage). If the client is not authorized to create the requested resource, the origin server MUST respond with 401 (Unauthorized) if authentication is possible; otherwise, it MUST respond with 403 (Forbidden).
 
-There is no temporal specification as to how long a client can take to transfer all the content ranges. A server MAY choose to implicitly cancel a transfer it deems abandoned due to inactivity after an arbitrary period or after an absolute amount of time has passed. It is RECOMMENDED that an origin server which knows when the transfer will be considered canceled return the Sunset header as defined in {{!RFC8594}}, which indicates the cancellation date and time. {{cancel-transfer}} describes how a transfer is explicitly canceled.
+There is no temporal specification as to how long a client is allowed take to transfer all the content ranges. A server MAY choose to implicitly cancel a transfer it deems abandoned due to inactivity after an arbitrary period or after an absolute amount of time has passed. It is RECOMMENDED that an origin server which knows when the transfer will be considered canceled return the Sunset header as defined in {{!RFC8594}}, which indicates the cancellation date and time. {{cancel-transfer}} describes how a transfer is explicitly canceled.
 
 ## The Content-Disposition Header Field
 
@@ -134,7 +134,7 @@ An example is
 Allow-Length: 10000000
 ~~~~
 
-In the absence of the Allow-Length header field, a client is obligated to know the maximum length through out-of-band knowledge such as publicly documented policy or through probing requests until a suitable length is determined.
+In the absence of the Allow-Length header field, a client is obligated to know the maximum length through out-of-band knowledge such as a publicly documented policy or through probing requests until a suitable length is determined.
 
 An origin server MAY choose to return Allow-Length in a HEAD or OPTIONS request for a client that did not persist the value and resumes a transfer at a later time. The specified Allow-Length SHOULD NOT change for the lifetime of a transfer. If the value does change during a transfer, then the origin server SHOULD support the HEAD method, OPTIONS method, or both, that SHALL respond with an updated Allow-Length header field.
 
@@ -163,8 +163,9 @@ Content-Disposition: create; size=4294967296
 An example response would be:
 
 ~~~~
-Location: <URL>
+Allow-Length: 10000000
 ETag: "sz8L2qGcV0SHqg8rXwALVQ=="
+Location: <URL>
 Sunset: Mon, 13 Nov 2023 00:00:00 GMT
 ~~~~
 
@@ -192,7 +193,7 @@ If-Match is a REQUIRED header field. The If-Match header field MUST contain the 
 
 ## Expect Header Field
 
-Expect is an OPTIONAL header field and has the same meaning as defined in Section 10.1.1 of {{!RFC9110}}. Partial content uploads can still be large. Clients SHOULD send the 100-Continue expectation to ensure the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large). The server SHOULD also respond with the Allow-Length header field ({{allow-length}}) to indicate the maximum length allowed by the server.
+Expect is an OPTIONAL header field and has the same meaning as defined in Section 10.1.1 of {{!RFC9110}}. It is still possible for partial content uploads to be large. Clients SHOULD send the 100-Continue expectation to ensure that the server is willing to accept the size of the content being sent. If the client sends more partial content than the server is willing to accept in a single request, it MUST respond with 413 (Payload Too Large). The server SHOULD also respond with the Allow-Length header field ({{allow-length}}) to indicate the maximum length allowed by the server.
 
 ## Resource Contention
 
@@ -200,11 +201,11 @@ It is possible that multiple clients MAY request that an origin server update a 
 
 If the server is unable to fulfill the request because the allocated storage for the resource no longer exists, the server MUST respond with 410 (Gone).
 
-Retrying large content transfers can strain network resources and are likely to have high latency. If the origin server is aware that the storage resource is temporarily unavailable, it is RECOMMENDED that it automatically retry copying the transferred content. The number of times the server retries, or whether that server retries at all, is at the discretion of the server.
+Retrying large content transfers MAY strain network resources and are likely to have high latency. If the origin server is aware that the storage resource is temporarily unavailable, it is RECOMMENDED that it automatically retry copying the transferred content. The number of times the server retries, or whether that server retries at all, is at the discretion of the server.
 
 ## Completing the Transfer {#complete-transfer}
 
-To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it MAY increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain contiguous content ranges up to the size of the total content, potentially overlapping. If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client can retrieve the resource with a GET request, which MAY not previously be known to the client.
+To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it MAY increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain contiguous content ranges up to the size of the total content, potentially overlapping. If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client MAY retrieve the resource with a GET request, which MAY not previously be known to the client.
 
 A server SHOULD NOT be stateful. A server, however, MAY choose to store the start and end position of each content range received in external storage such as a file or database. The exact mechanism used to implement this behavior is at the discretion of the server. Once the server has made the decision that all of the content has been transferred, it MAY allow access to the resource via the GET method that is indicated in Content-Location.
 
@@ -268,7 +269,7 @@ The "size" parameter is REQUIRED. The "filename", "creation-date", "modification
 
 ## The Allow-Length Response Header Field
 
-This document request that the Allow-Length response header field be added to the "Permanent Message Header Field Names" registry (see {{!RFC3864}}), taking into account the guidelines given by {{!RFC9110}}.
+This document requests that the Allow-Length response header field be added to the "Permanent Message Header Field Names" registry (see {{!RFC3864}}), taking into account the guidelines given by {{!RFC9110}}.
 
 Header Field Name: Allow-Length
 
