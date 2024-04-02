@@ -143,7 +143,7 @@ An example is
 Allow-Length: 10000000
 ~~~~
 
-In the absence of the Allow-Length header field, a client is obligated to know the maximum length through out-of-band knowledge such as a publicly documented policy or through probing requests until a suitable length is determined.
+In the absence of the Allow-Length header field, a client is obligated to know the maximum length allowed through out-of-band knowledge such as a publicly documented policy or through probing requests until a suitable length is determined.
 
 An origin server MAY choose to return Allow-Length in a HEAD or OPTIONS request for a client that did not persist the value and resumes a transfer at a later time. The specified Allow-Length SHOULD NOT change for the lifetime of a transfer. If the value does change during a transfer, then the origin server SHOULD support the HEAD method, OPTIONS method, or both, that SHALL respond with an updated Allow-Length header field.
 
@@ -214,7 +214,7 @@ Retrying large content transfers MAY strain network resources and are likely to 
 
 ## Completing the Transfer {#complete-transfer}
 
-To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it MAY increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain contiguous content ranges up to the size of the total content, potentially overlapping. If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client MAY retrieve the resource with a GET request, which MAY not previously be known to the client.
+To complete a transfer, a client MUST send all the corresponding content ranges. A client MAY vary the size of each transfer; for example, it MAY increase or decrease the content range based on available network bandwidth. A server knows that the transfer is complete when it has received transfers from a client that contain all of the contiguous content ranges up to the size of the total content, potentially overlapping. If the origin server determines no further content is expected, then it MUST respond with 201 (Created) and Content-Location. Content-Location indicates the URL where the client MAY retrieve the resource with a GET request, which MAY not previously be known to the client.
 
 A server SHOULD NOT be stateful. A server, however, MAY choose to store the start and end position of each content range received in external storage such as a file or database. The exact mechanism used to implement this behavior is at the discretion of the server. Once the server has made the decision that all of the content has been transferred, it MAY allow access to the resource via the GET method that is indicated in Content-Location.
 
