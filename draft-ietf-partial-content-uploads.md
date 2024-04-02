@@ -48,6 +48,15 @@ informative:
                 name: Anne van Kesteren
                 email: annevk@annevk.nl
         date: 27 September 2023
+    FETCH:
+        target: https://fetch.spec.whatwg.org/
+        title: Fetch Standard
+        author:
+            -
+                org: Web Hypertext Application Technology Working Group
+                abbrev: WHATWG
+                uri: https://github.com/whatwg/fetch
+        date: 25 March 2024
 
 --- abstract
 
@@ -286,7 +295,7 @@ Author/Change controller: IETF
 
 The Content-Length header field defined in Section 8.6 of {{!RFC9110}} is the most appropriate header field to indicate the size of the intended content being transferred. As Section 8 of {{!RFC9110}} indicates, a "representation" can be anything. In this document, the "representation" would be the allocated storage for the content transfer, such as a file.
 
-The client scripting engines of modern browsers use the XMLHttpRequest (XHR) API. Section 4.5.2 of the {{XHR}} specification clearly indicates that the Content-Length header is restricted and is only allowed to be set by the browser. The inability to set the Content-Length header without a body makes it an unusable header field as it relates to this document.
+The client scripting engines of modern browsers use the XMLHttpRequest (XHR) API and Fetch Standard. Section 4.5.2 in the {{XHR}} specification and Section 2.2.2 in the {{FETCH}} specification both state that the Content-Length header is restricted and is only allowed to be set by the browser. The inability to set the Content-Length header without a body makes it an unusable header field as it relates to this document.
 
 In lieu of defining a new header field, this document elected to use the existing Content-Disposition header field defined in {{!RFC2183}} and {{!RFC6266}} to serve the same purpose.
 
